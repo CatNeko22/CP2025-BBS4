@@ -57,7 +57,7 @@ function updateCharacterCount(inputId, counterId, maxLength) {
 
     input.on('input', () => {
         const length = input.val().length;
-        counter.text(`${length}/${maxLength}`);
+        counter.text(`'残り文字数', ${maxLength - length}`);
 
         if (length > maxLength) {
             counter.addClass('error');
@@ -153,6 +153,28 @@ function formatTimestamp(timestamp) {
         minute: '2-digit'
     });
 }
+function formatRelativeTime(timestamp) {
+    const now =  Date.now();
+    const diff = Math.floor((now - timestamp) - 1000);
+
+    if(diff < 60) {
+        return '${diff}秒前';
+    }
+    const minutes = Math.floor(diff/60);
+    if(minutes < 60) {
+        return '${minutes}分前';
+    }
+    const hours = Math.floor(minutes/60);
+    if(hours < 24) {
+        return '${hours}時間前';
+    }
+    const days = Math.floor(hours/24);
+    if(days < 365) {
+        return '${days}日前';
+    }
+    const years = Math.floor(days/365);
+    return '${years}年前';
+}
 
 // 投稿の編集権限チェック
 function canEditPost(post) {
@@ -182,6 +204,12 @@ function createPostElement(post) {
                 <span class="post-author">${escapeHtml(post.author)}</span>
                 <!-- 編集権限があれば、編集・削除機能を表示 -->
                 ${actions}
+            </div>
+            </div class="post-body">
+                <div class="post-content">${escapeHtml(post.content)}</div>
+                <span class="post-time">
+                    ${formatRelativeTime(post.timestamp)}
+                </span>
             </div>
             <div class="post-content">${escapeHtml(post.content)}</div>
             <div class="edit-form">
